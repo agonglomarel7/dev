@@ -17,9 +17,6 @@ Le code correspondant se trouve dans le notebook `03_streams_tasks.ipynb`.
 7. [Exécution manuelle](#7-exécution-manuelle)
 8. [Tester le pipeline : lot J2](#8-tester-le-pipeline--lot-j2)
 9. [Supervision](#9-supervision)
-10. [Points d'attention](#10-points-dattention)
-11. [Résumé](#11-résumé)
-
 ---
 
 ## 1. Vue d'ensemble
@@ -295,42 +292,3 @@ SELECT SYSTEM$STREAM_HAS_DATA('SHOPFLOW_DB.RAW.STR_ORDERS');
 ```
 
 ---
-
-## 10. Points d'attention
-
-**Données existantes avant la création d'un Stream.** Un Stream ne « voit » que les lignes insérées après sa création. Les lignes déjà présentes dans RAW à ce moment-là ne sont pas dans le Stream : il faut les charger dans STAGING par un `INSERT INTO ... SELECT` initial sur la table RAW.
-
-**Jointure entre un Stream et une table classique.** `TSK_LOAD_STG_WEB_EVENTS` joint `STR_WEB_EVENTS` à `WEB_EVENTS_EXT`. Si l'événement arrive dans RAW avant sa ligne correspondante dans `WEB_EVENTS_EXT`, la jointure ne retourne rien, mais l'offset avance quand même : l'événement est consommé sans avoir été chargé dans STAGING. Vérifiez que `WEB_EVENTS_EXT` est alimentée en même temps que `WEB_EVENTS_RAW` (y compris pour le lot J2).
-
-**Coût de la task root.** Elle n'a pas de condition `WHEN` : elle s'exécute toutes les 5 minutes et sollicite l'entrepôt même quand aucun Stream n'a de données. Une amélioration possible est de lui ajouter une condition regroupant les cinq Streams :
-
-```sql
-WHEN SYSTEM$STREAM_HAS_DATA('SHOPFLOW_DB.RAW.STR_ORDERS')
-  OR SYSTEM$STREAM_HAS_DATA('SHOPFLOW_DB.RAW.STR_ORDER_ITEMS')
-  OR SYSTEM$STREAM_HAS_DATA('SHOPFLOW_DB.RAW.STR_WEB_EVENTS')
-  OR SYSTEM$STREAM_HAS_DATA('SHOPFLOW_DB.RAW.STR_PRODUCTS')
-  OR SYSTEM$STREAM_HAS_DATA('SHOPFLOW_DB.RAW.STR_CUSTOMERS')
-```
-
-**Stream périmé (stale).** Un Stream qui n'est pas consommé pendant plus longtemps que la période de rétention des données de sa table devient inutilisable. Si les tasks restent suspendues longtemps, il faut recréer le Stream.
-
-**Doublons.** Les tasks font des `INSERT INTO` simples, sans déduplication : si une même ligne est chargée deux fois dans RAW, elle sera insérée deux fois dans STAGING.
-
----
-
-## 11. Résumé
-
-| Question | Réponse |
-|---|---|
-| Comment les nouvelles données sont-elles détectées ? | Les Streams `APPEND_ONLY` exposent les lignes insérées depuis leur dernier offset |
-| Quand le pipeline se déclenche-t-il ? | Toutes les 5 minutes, via la task root (polling) |
-| Qu'est-ce qui décide si une transformation s'exécute ? | `SYSTEM$STREAM_HAS_DATA()` dans la clause `WHEN` de chaque task enfant |
-| Comment évite-t-on de retraiter les mêmes lignes ? | La consommation du Stream par un DML fait avancer l'offset |
-| Comment activer le pipeline ? | `ALTER TASK ... RESUME` sur les enfants, puis sur la root |
-| Comment forcer une exécution immédiate ? | `EXECUTE TASK SHOPFLOW_DB.RAW.TSK_ROOT_SCHEDULER;` |
-
-**Flux complet :**
-
-```
-Fichiers → Stage → COPY INTO → RAW → Stream détecte → Task transforme → STAGING
-```
