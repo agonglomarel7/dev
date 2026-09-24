@@ -1,0 +1,30 @@
+name: 'fintrack'
+version: '1.0.0'
+
+profile: 'fintrack'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  fintrack:
+
+    staging:
+      +materialized: view
+      +schema: STAGING
+
+    intermediate:
+      +materialized: view
+      +schema: INTERMEDIATE
+
+    marts:
+      +materialized: table
+      +schema: ANALYTICS

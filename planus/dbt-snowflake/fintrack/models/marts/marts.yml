@@ -1,0 +1,14 @@
+version: 2
+
+models:
+
+  - name: fct_transactions
+    description: "Table de faits contenant les transactions validées"
+
+    columns:
+
+      - name: transaction_id
+
+        tests:
+          - unique
+          - not_null

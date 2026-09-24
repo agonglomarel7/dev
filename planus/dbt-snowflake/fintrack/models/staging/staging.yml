@@ -1,0 +1,67 @@
+version: 2
+
+models:
+
+  - name: stg_comptes
+    description: "Table de staging des comptes"
+
+    columns:
+
+      - name: compte_id
+        description: "Identifiant unique du compte"
+
+        tests:
+          - unique
+          - not_null
+
+
+      - name: type_compte
+
+        tests:
+          - accepted_values:
+              values:
+                - courant
+                - epargne
+                - joint
+
+
+      - name: statut
+
+        tests:
+          - accepted_values:
+              values:
+                - actif
+                - inactif
+                - cloture
+
+
+  - name: stg_transactions
+    description: "Table de staging des transactions"
+
+    columns:
+
+      - name: transaction_id
+
+        tests:
+          - unique
+          - not_null
+
+
+      - name: compte_id
+
+        tests:
+          - relationships:
+              to: ref('stg_comptes')
+              field: compte_id
+
+
+  - name: stg_categories
+    description: "Table de staging des catégories"
+
+    columns:
+
+      - name: categorie_id
+
+        tests:
+          - unique
+          - not_null

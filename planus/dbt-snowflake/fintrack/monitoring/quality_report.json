@@ -1,0 +1,78 @@
+{
+    "pipeline_name": "FinTrack",
+    "generated_at": "2026-09-15T13:18:27.229199",
+    "status": "FAILED",
+    "checks_count": 7,
+    "checks": [
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_COMPTES",
+            "check_type": "business_solde_negatif_epargne",
+            "status": "PASSED",
+            "severity": "LOW",
+            "expected_value": "0",
+            "observed_value": "0",
+            "message": "Aucun compte épargne en solde négatif"
+        },
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_TRANSACTIONS",
+            "check_type": "integrity_categories",
+            "status": "PASSED",
+            "severity": "LOW",
+            "expected_value": "0",
+            "observed_value": "0",
+            "message": "Toutes les transactions ont une catégorie valide"
+        },
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_TRANSACTIONS",
+            "check_type": "integrity_comptes",
+            "status": "PASSED",
+            "severity": "LOW",
+            "expected_value": "0",
+            "observed_value": "0",
+            "message": "Toutes les transactions ont un compte valide"
+        },
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_TRANSACTIONS",
+            "check_type": "quality_duplicates",
+            "status": "PASSED",
+            "severity": "LOW",
+            "expected_value": "0",
+            "observed_value": "0",
+            "message": "Aucun doublon détecté sur ID"
+        },
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_TRANSACTIONS",
+            "check_type": "quality_invalid_values",
+            "status": "PASSED",
+            "severity": "LOW",
+            "expected_value": "0",
+            "observed_value": "0",
+            "message": "Aucune valeur invalide détectée"
+        },
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_TRANSACTIONS",
+            "check_type": "quality_nulls",
+            "status": "PASSED",
+            "severity": "LOW",
+            "expected_value": "0",
+            "observed_value": "0",
+            "message": "Aucune valeur NULL détectée"
+        },
+        {
+            "pipeline_name": "FinTrack",
+            "model_name": "RAW_TRANSACTIONS",
+            "check_type": "volume",
+            "status": "FAILED",
+            "severity": "CRITICAL",
+            "expected_value": ">= 20000",
+            "observed_value": "12",
+            "message": "Volume de transactions anormalement faible"
+        }
+    ]
+}

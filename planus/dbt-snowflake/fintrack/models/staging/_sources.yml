@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: fintrack_raw
+    database: FINTRACK_DB
+    schema: RAW
+
+    tables:
+      - name: RAW_COMPTES
+      - name: RAW_TRANSACTIONS
+      - name: RAW_CATEGORIES
+      - name: RAW_BUDGETS
