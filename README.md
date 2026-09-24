@@ -196,8 +196,6 @@ dbt docs generate
 dbt docs serve
 ```
 
-![Lineage dbt](docs/lineage.png)
-
 ## 9. Commandes utiles
 
 ```bash
