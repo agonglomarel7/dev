@@ -74,16 +74,6 @@ Un Stream est créé pour chaque table RAW : `STR_ORDERS`, `STR_ORDER_ITEMS`, `S
 - Lire un Stream retourne les lignes ajoutées **depuis cet offset**.
 - L'offset n'avance que lorsque le Stream est **consommé par une opération DML** (`INSERT INTO ... SELECT ... FROM stream`) dont la transaction est validée. Un simple `SELECT` pour vérifier le contenu **ne consomme rien**.
 
-```
-Table RAW      : [ligne 1] [ligne 2] [ligne 3] [ligne 4] [ligne 5]
-                                     ▲
-Offset du Stream                     │   → le Stream expose les lignes 4 et 5
-
-Une Task exécute INSERT INTO STG ... SELECT ... FROM stream
-                                                    ▲
-Nouvel offset                                       │   → le Stream est vide, en attente
-```
-
 ### Mode `APPEND_ONLY`
 
 Les cinq Streams sont en `APPEND_ONLY = TRUE` : ils ne capturent que les **`INSERT`**. Les `UPDATE` et `DELETE` effectués dans RAW ne sont pas visibles. C'est cohérent avec un chargement par `COPY INTO` (uniquement des ajouts), et c'est plus léger qu'un Stream standard.
